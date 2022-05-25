@@ -1,0 +1,16 @@
+---
+- hosts: OBBservers
+  remote_user: ansible
+  become: true
+  become_method: sudo
+  become_user: root
+  tasks:
+    - name: Transfer script to remote location
+      copy:
+        src: /home/ansible/securityenhancement.sh
+        dest: /home/ansible/
+        owner: ansible
+        group: ansible
+        mode: 0775
+    - name: Execute the script
+      shell: sh /home/ansible/securityenhancement.sh
