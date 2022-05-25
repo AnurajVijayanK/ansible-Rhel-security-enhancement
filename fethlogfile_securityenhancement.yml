@@ -1,0 +1,10 @@
+---
+- hosts: OBBservers
+  remote_user: ansible
+  become: yes
+  tasks:
+  - name: Copy the files from the Source Machine to Ansible Controller
+    synchronize:
+      mode: pull
+      src: /home/ansible/output.txt
+      dest: "/tmp/securityenhancement_logs/output_{{ ansible_hostname }}.txt"
