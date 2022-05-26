@@ -1,0 +1,27 @@
+---
+- hosts: OBBservers
+  remote_user: ansible
+  become: true
+  become_method: sudo
+  become_user: root
+  tasks:
+    - name: Transfer script to remote location
+      copy:
+        src: /home/ansible/motd.sh
+        dest: /home/ansible/
+        owner: ansible
+        group: ansible
+        mode: 0775
+    - name: add to Globel profile
+      become: yes
+      become_user: root
+      tags: bashrc
+      lineinfile:
+         path: /etc/profile
+         line: "sudo /home/ansible/motd.sh"
+         state: present
+      check_mode: yes
+      register: presence
+    - name: add TMOUT in bashrc file if its not preset
+      shell: echo "sudo /home/ansible/motd.sh" >> /etc/profile
+      when: presence is changed
