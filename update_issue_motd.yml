@@ -1,0 +1,29 @@
+---
+- hosts: OBBservers
+  remote_user: ansible
+  become: true
+  become_method: sudo
+  become_user: root
+
+  tasks:
+  - name: deploy issue.net template
+    template:
+     src: /home/ansible/issue.net
+     dest: /etc/issue.net
+  - name: "Searching for a Stringi Banner"
+    lineinfile:
+      path: /etc/ssh/sshd_config
+      regexp: '^#Banner none'
+      line: "Banner  /etc/issue.net"
+      state: present
+      create: yes
+  - name: deploy motd template
+    template:
+     src: /home/ansible/motd
+     dest: /etc/motd
+  - name: remove default motd
+    command: "{{ item.cmd }}"
+    with_items:
+    - { cmd: 'rm -f /etc/issue.d/cockpit.issue /etc/motd.d/cockpit' }
+    - { cmd: 'rm  -f /etc/motd.d/insights-client' }
+    - { cmd: 'systemctl restart sshd' }
